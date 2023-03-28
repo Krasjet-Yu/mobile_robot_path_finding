@@ -28,14 +28,24 @@ namespace env
     double getResolution() { return resolution_; }
     Eigen::Vector3d getOrigin() { return origin_; }
     Eigen::Vector3d getMapSize() { return map_size_; };
-    bool isStateValid(const Eigen::Vector3d &pos) const
+    
+    inline bool isStateValid(const Eigen::Vector3d &pos) const
     {
       Eigen::Vector3i idx = posToIndex(pos);
       if (!isInMap(idx))
         return false;
       return (occupancy_buffer_[idxToAddress(idx)] == false);
     };
-    bool isSegmentValid(const Eigen::Vector3d &p0, const Eigen::Vector3d &p1, double max_dist = DBL_MAX) const
+
+    inline int getInflateOccupancy(const Eigen::Vector3d &pos) const
+    {
+      Eigen::Vector3i idx = posToIndex(pos);
+      if (!isInMap(idx))
+        return -1;
+      return int(occupancy_buffer_[idxToAddress(idx)]);
+    }
+
+    inline bool isSegmentValid(const Eigen::Vector3d &p0, const Eigen::Vector3d &p1, double max_dist = DBL_MAX) const
     {
       Eigen::Vector3d dp = p1 - p0;
       double dist = dp.norm();

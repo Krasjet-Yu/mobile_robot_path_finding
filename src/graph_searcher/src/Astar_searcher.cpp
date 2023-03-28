@@ -5,7 +5,7 @@ using namespace Eigen;
 
 AstarPathFinder::AstarPathFinder() {
     std::string use_tie = use_Tie_breaker? "yes": "no";
-    ROS_INFO("[node] is use tie break ? %s", use_tie.c_str());
+    ROS_WARN("[ASTAR NODE] Is Use Tie Break ? %s", use_tie.c_str());
     std::string heu_func;
     switch (select_func)
     {
@@ -25,7 +25,7 @@ AstarPathFinder::AstarPathFinder() {
         heu_func = "NoUseHeu";
         break;
     }
-    ROS_INFO("[node] which heuristic function is used ? %s", heu_func.c_str());
+    ROS_WARN("[ASTAR NODE] Which heuristic function is used ? %s", heu_func.c_str());
 }
 
 double AstarPathFinder::TieBreaker(GridNodePtr cur_node, GridNodePtr start_node, GridNodePtr end_node) {
