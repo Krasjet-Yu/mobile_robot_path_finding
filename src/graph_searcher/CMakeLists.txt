@@ -4,10 +4,9 @@ project(graph_searcher)
 find_package(catkin REQUIRED COMPONENTS 
     roscpp 
     std_msgs
-    occ_grid
     nav_msgs
     visualization_msgs 
-    visualization
+    occ_grid
 )
 
 find_package(Eigen3 REQUIRED)
@@ -17,6 +16,8 @@ set(Eigen3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
 
 catkin_package(
   INCLUDE_DIRS include
+  LIBRARIES graph_searcher
+  CATKIN_DEPENDS occ_grid
 )
 
 include_directories(
