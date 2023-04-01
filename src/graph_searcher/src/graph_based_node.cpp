@@ -19,11 +19,10 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
 OF SUCH DAMAGE.
 */
 #include "occ_grid/occ_map.h"
-#include "Astar_searcher.h"
-#include "JPS_searcher.h"
+#include "a_star.h"
 
 #include "ros/ros.h"
-#include "visulization/visulization.hpp"
+#include "visualization.hpp"
 #include "geometry_msgs/PoseStamped.h"
 
 class GraphBasedPathFinder
@@ -40,8 +39,7 @@ private:
 
     bool run_a_star_, run_jps_;
 
-    AstarPathFinder::Ptr a_star_;
-    JPSPathFinder::Ptr jps_;
+    Astar::Ptr a_star_;
 
 public:
     GraphBasedPathFinder(const ros::NodeHandle &nh) : nh_(nh)
@@ -55,10 +53,10 @@ public:
 
         wp_sub_ = nh_.subscribe("/goal", 1, &GraphBasedPathFinder::rcvWaypointsCallback, this);
         // glb_sub_ = nh_.subscribe("/occ_map/glb_map", 1, &GraphBasedPathFinder::rcvPointCloudCallBack, this);
-        execution_timer_ = nh_.createTimer(ros::Duration(1), &TesterPathFinder::executionCallback, this);
+        execution_timer_ = nh_.createTimer(ros::Duration(1), &GraphBasedPathFinder::executionCallback, this);
 
         // Path Finding Algorithms
-        a_star_ = std::make_shared<AstarPathFinder>(nh_);
+        a_star_.reset(new Astar);
         a_star_->initOccMap(env_ptr_, Eigen::Vector3i(100, 100, 100));
 
         start_.setZero();
@@ -78,9 +76,24 @@ public:
         vis_ptr_->visualize_a_ball(start_, 0.3, "start", visualization::Color::pink);
         vis_ptr_->visualize_a_ball(goal_, 0.3, "goal", visualization::Color::steelblue);
 
-        if (run_a_star_)
-        {
-
+        if (run_a_star_) {
+            int a_star_res = a_star_->AstarSearch(/*(start_-goal_).norm()/10+0.05*/ env_ptr_->getResolution(), start_, goal_);
+            if (a_star_res == ASTAR_RET::SUCCESS) {
+                std::vector<Eigen::Vector3d> final_path = a_star_->getPath();
+                vis_ptr_->visualize_path(final_path, "a_star_final_path");
+                vis_ptr_->visualize_pointcloud(final_path, "a_star_final_wpts");
+            }
+            else if (a_star_res == ASTAR_RET::SEARCH_ERR /*&& i + 1 < segment_ids.size()*/) { // connect the next segment
+                // segment_ids[i].second = segment_ids[i + 1].second;
+                // segment_ids.erase(segment_ids.begin() + i + 1);
+                // --i;
+                ROS_WARN("A conor case 2, I have never exeam it.");
+            }
+            else {
+                ROS_ERROR("A-star error, force return!");
+                // return CHK_RET::ERR;
+                return;
+            }
         }
 
         if (run_jps_)
@@ -91,7 +104,7 @@ public:
         start_ = goal_;
     }
 
-    void executionCallback(const ros::TimeEvent &event)
+    void executionCallback(const ros::TimerEvent &event)
     {
         if (!env_ptr_->mapValid())
         {
@@ -103,12 +116,17 @@ public:
         }
     }
 
-}
+};
 
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "graph_based_node");
     ros::NodeHandle nh("~");
 
-    
+    GraphBasedPathFinder gbpf(nh);
+
+    ros::AsyncSpinner spinner(0);
+    spinner.start();
+    ros::waitForShutdown();
+    return 0;
 }
