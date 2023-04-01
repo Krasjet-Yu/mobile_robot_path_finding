@@ -3,7 +3,7 @@
   <name>graph_searcher</name>
   <version>0.0.1</version>
   <description> Path searching methods on 3d grid map </description>
-  <maintainer email="ustfeigao@gmail.com">fgaoaa</maintainer>
+  <maintainer email="krasjet.ziping@gmail.com">krasjet</maintainer>
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>

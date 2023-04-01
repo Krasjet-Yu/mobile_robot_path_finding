@@ -4,8 +4,10 @@ project(graph_searcher)
 find_package(catkin REQUIRED COMPONENTS 
     roscpp 
     std_msgs
+    occ_grid
     nav_msgs
     visualization_msgs 
+    visualization
 )
 
 find_package(Eigen3 REQUIRED)
@@ -29,10 +31,11 @@ include_directories(
 set(CMAKE_CXX_FLAGS "-std=c++14 ${CMAKE_CXX_FLAGS} -O3 -Wall") # -Wextra -Werror
 
 add_executable( graph_search_node 
-    src/graph_search_node.cpp
-    src/Astar_searcher.cpp
-    src/JPS_utils.cpp
-    src/JPS_searcher.cpp
+    # src/graph_search_node.cpp
+    src/graph_based_node.cpp
+    src/a_star.cpp
+    #src/JPS_utils.cpp
+    #src/JPS_searcher.cpp
     )
 
 target_link_libraries(graph_search_node 
