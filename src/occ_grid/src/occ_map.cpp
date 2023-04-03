@@ -65,7 +65,7 @@ namespace env
     glb_cloud_ptr_->width = glb_cloud_ptr_->points.size();
     glb_cloud_ptr_->height = 1;
     glb_cloud_ptr_->is_dense = true;
-    glb_cloud_ptr_->header.frame_id = "world";
+    glb_cloud_ptr_->header.frame_id = "map";
     cout << "glb occ set" << endl;
     global_cloud_sub_.shutdown();
   }

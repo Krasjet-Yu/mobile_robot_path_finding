@@ -178,7 +178,7 @@ void RandomMapGenerate()
    _has_map = true;
    
    pcl::toROSMsg(cloudMap, globalMap_pcd);
-   globalMap_pcd.header.frame_id = "world";
+   globalMap_pcd.header.frame_id = "map";
 }
 
 void pubSensedPoints()

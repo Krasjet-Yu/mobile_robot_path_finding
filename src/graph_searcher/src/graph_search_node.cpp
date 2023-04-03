@@ -106,7 +106,7 @@ void rcvPointCloudCallBack(const sensor_msgs::PointCloud2 & pointcloud_map)
 
     pcl::toROSMsg(cloud_vis, map_vis);
 
-    map_vis.header.frame_id = "world";
+    map_vis.header.frame_id = "map";
     _grid_map_vis_pub.publish(map_vis);
 
     _has_map = true;
@@ -210,7 +210,7 @@ int main(int argc, char** argv)
 void visGridPath( vector<Vector3d> nodes, bool is_use_jps )
 {   
     visualization_msgs::Marker node_vis; 
-    node_vis.header.frame_id = "world";
+    node_vis.header.frame_id = "map";
     node_vis.header.stamp = ros::Time::now();
     
     if(is_use_jps)
@@ -262,7 +262,7 @@ void visGridPath( vector<Vector3d> nodes, bool is_use_jps )
 void visVisitedNode( vector<Vector3d> nodes )
 {   
     visualization_msgs::Marker node_vis; 
-    node_vis.header.frame_id = "world";
+    node_vis.header.frame_id = "map";
     node_vis.header.stamp = ros::Time::now();
     node_vis.ns = "demo_node/expanded_nodes";
     node_vis.type = visualization_msgs::Marker::CUBE_LIST;
