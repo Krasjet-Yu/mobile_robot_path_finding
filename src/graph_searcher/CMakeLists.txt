@@ -36,8 +36,8 @@ add_executable( graph_search_node
     # src/graph_search_node.cpp
     src/graph_based_node.cpp
     src/a_star.cpp
-    #src/JPS_utils.cpp
-    #src/JPS_searcher.cpp
+    src/utils.cpp
+    src/jps.cpp
     )
 
 target_link_libraries(graph_search_node 

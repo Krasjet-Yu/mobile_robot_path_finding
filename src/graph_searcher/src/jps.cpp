@@ -4,11 +4,13 @@ JPS::JPS () {
     jn3d = new JPS3DNeib();
 }
 
-void JPS::initOccMap(env::occ_grid::Ptr occ_map, const Eigen::Vector3i pool_size) {
+void JPS::initOccMap(env::OccMap::Ptr occ_map, const Eigen::Vector3i pool_size) {
     POOL_SIZE_ = pool_size;
+    CENTER_IDX_ = pool_size / 2;
+
     GridNodeMap_ = new GridNodePtr **[POOL_SIZE_(0)];
     for (int i = 0; i < POOL_SIZE_(0); ++i) {
-        GridNodeMap_[i] = new GirdNodePtr *[POOL_SIZE_(1)];
+        GridNodeMap_[i] = new GridNodePtr *[POOL_SIZE_(1)];
         for (int j = 0; j < POOL_SIZE_(1); ++j) {
             GridNodeMap_[i][j] = new GridNodePtr [POOL_SIZE_(2)];
             for (int k = 0; k < POOL_SIZE_(2); ++k) {
@@ -16,7 +18,7 @@ void JPS::initOccMap(env::occ_grid::Ptr occ_map, const Eigen::Vector3i pool_size
             }
         }
     }
-    occ_map_ = grid_map;
+    grid_map_ = occ_map;
 }
 
 inline void JPS::JPSGetSucc(GridNodePtr currentPtr, vector<GridNodePtr> & neighborPtrSets, vector<double> & edgeCostSets)
@@ -27,6 +29,7 @@ inline void JPS::JPSGetSucc(GridNodePtr currentPtr, vector<GridNodePtr> & neighb
 
     int num_neib  = jn3d->nsz[norm1][0];
     int num_fneib = jn3d->nsz[norm1][1];
+    // child id
     int id = (currentPtr->dir(0) + 1) + 3 * (currentPtr->dir(1) + 1) + 9 * (currentPtr->dir(2) + 1);
 
     for( int dev = 0; dev < num_neib + num_fneib; ++dev) {
@@ -46,10 +49,8 @@ inline void JPS::JPSGetSucc(GridNodePtr currentPtr, vector<GridNodePtr> & neighb
             int ny = currentPtr->index(1) + jn3d->f1[id][1][dev - num_neib];
             int nz = currentPtr->index(2) + jn3d->f1[id][2][dev - num_neib];
             
-            Eigen::Vector3d pos;
             Eigen::Vector3i idx(nx, ny, nz);
-            Index2Coord(idx, pos);
-            if(CheckOccupancy(pos)) {
+            if(CheckOccupancy(Index2Coord(idx))) {
                 expandDir(0) = jn3d->f2[id][0][dev - num_neib];
                 expandDir(1) = jn3d->f2[id][1][dev - num_neib];
                 expandDir(2) = jn3d->f2[id][2][dev - num_neib];
@@ -61,7 +62,8 @@ inline void JPS::JPSGetSucc(GridNodePtr currentPtr, vector<GridNodePtr> & neighb
                 continue;
         }
 
-        GridNodePtr nodePtr = GridNodeMap[neighborIdx(0)][neighborIdx(1)][neighborIdx(2)];
+        GridNodePtr nodePtr = GridNodeMap_[neighborIdx(0)][neighborIdx(1)][neighborIdx(2)];
+        nodePtr->index = neighborIdx;
         nodePtr->dir = expandDir;
         
         neighborPtrSets.push_back(nodePtr);
@@ -74,13 +76,11 @@ inline void JPS::JPSGetSucc(GridNodePtr currentPtr, vector<GridNodePtr> & neighb
     }
 }
 
-bool JPS::jump(const Vector3i & curIdx, const Vector3i & expDir, Vector3i & neiIdx)
+bool JPS::jump(const Eigen::Vector3i & curIdx, const Eigen::Vector3i & expDir, Eigen::Vector3i & neiIdx)
 {
     neiIdx = curIdx + expDir;
 
-    Eigen::Vector3d neiPos;
-    Index2Coord(neiIdx, neiPos);
-    if(CheckOccupancy(neiPos))
+    if(!(CheckOccupancy(Index2Coord(neiIdx))<1))
         return false;
 
     if( neiIdx == goalIdx )
@@ -103,7 +103,7 @@ bool JPS::jump(const Vector3i & curIdx, const Vector3i & expDir, Vector3i & neiI
     return jump(neiIdx, expDir, neiIdx);
 }
 
-inline bool JPS::hasForced(const Vector3i & idx, const Vector3i & dir)
+inline bool JPS::hasForced(const Eigen::Vector3i & idx, const Eigen::Vector3i & dir)
 {
     int norm1 = abs(dir(0)) + abs(dir(1)) + abs(dir(2));
     int id    = (dir(0) + 1) + 3 * (dir(1) + 1) + 9 * (dir(2) + 1);
@@ -115,10 +115,8 @@ inline bool JPS::hasForced(const Vector3i & idx, const Vector3i & dir)
                 int nx = idx(0) + jn3d->f1[id][0][fn];
                 int ny = idx(1) + jn3d->f1[id][1][fn];
                 int nz = idx(2) + jn3d->f1[id][2][fn];
-                Eigen::Vector3d pos;
                 Eigen::Vector3i idx(nx, ny, nz);
-                Index2Coord(idx, pos);
-                if(CheckOccupancy(pos))
+                if(CheckOccupancy(Index2Coord(idx)))
                     return true;
             }
             return false;
@@ -129,10 +127,8 @@ inline bool JPS::hasForced(const Vector3i & idx, const Vector3i & dir)
                 int nx = idx(0) + jn3d->f1[id][0][fn];
                 int ny = idx(1) + jn3d->f1[id][1][fn];
                 int nz = idx(2) + jn3d->f1[id][2][fn];
-                Eigen::Vector3d pos;
                 Eigen::Vector3i idx(nx, ny, nz);
-                Index2Coord(idx, pos);
-                if(CheckOccupancy(pos))
+                if(CheckOccupancy(Index2Coord(idx)))
                     return true;
             }
             return false;
@@ -143,10 +139,8 @@ inline bool JPS::hasForced(const Vector3i & idx, const Vector3i & dir)
                 int nx = idx(0) + jn3d->f1[id][0][fn];
                 int ny = idx(1) + jn3d->f1[id][1][fn];
                 int nz = idx(2) + jn3d->f1[id][2][fn];
-                Eigen::Vector3d pos;
                 Eigen::Vector3i idx(nx, ny, nz);
-                Index2Coord(idx, pos);
-                if(CheckOccupancy(pos))
+                if(CheckOccupancy(Index2Coord(idx)))
                     return true;
             }
             return false;
@@ -205,9 +199,7 @@ bool JPS::ConvertToIndexAndAdjustStartEndPoints(Eigen::Vector3d start_pt, Eigen:
         return false;
 
     int occ;
-    Eigen::Vector3d pos;
-    Index2Coord(start_idx, pos);
-    if (CheckOccupancy(pos))
+    if (CheckOccupancy(Index2Coord(start_idx)))
     {
         // ROS_WARN("Start point is insdide an obstacle.");
         do
@@ -218,8 +210,7 @@ bool JPS::ConvertToIndexAndAdjustStartEndPoints(Eigen::Vector3d start_pt, Eigen:
             {
                 return false;
             }
-            Index2Coord(start_idx, pos);
-            occ = CheckOccupancy(pos);
+            occ = CheckOccupancy(Index2Coord(start_idx));
             if (occ == -1)
             {
                 ROS_WARN("[Astar] Start point outside the map region.");
@@ -227,8 +218,7 @@ bool JPS::ConvertToIndexAndAdjustStartEndPoints(Eigen::Vector3d start_pt, Eigen:
             }
         } while (occ);
     }
-    Index2Coord(end_idx, pos);
-    if (CheckOccupancy(pos))
+    if (CheckOccupancy(Index2Coord(end_idx)))
     {
         // ROS_WARN("End point is insdide an obstacle.");
         do
@@ -239,34 +229,33 @@ bool JPS::ConvertToIndexAndAdjustStartEndPoints(Eigen::Vector3d start_pt, Eigen:
             {
                 return false;
             }
-            Index2Coord(start_idx, pos);
-            occ = CheckOccupancy(pos);
+            occ = CheckOccupancy(Index2Coord(start_idx));
             if (occ == -1)
             {
                 ROS_WARN("[Astar] End point outside the map region.");
                 return false;
             }
-            Index2Coord(end_idx, pos);
-        } while (CheckOccupancy(pos));
+        } while (CheckOccupancy(Index2Coord(end_idx)));
     }
 
     return true;
 }
 
-void JPS::JpsSearch(const double step_size, Eigen::Vector3d start_pt, Eigen::Vector3d end_pt)
+GRAPH_RET JPS::JpsSearch(const double step_size, Eigen::Vector3d start_pt, Eigen::Vector3d end_pt)
 {
+    ros::Time t1 = ros::Time::now(); 
+    ++rounds_;
+
     step_size_ = step_size;
     inv_step_size_ = 1 / step_size;
-    ++rounds_;
-    
-    ros::Time t1 = ros::Time::now();    
+    center_ = (start_pt + end_pt) / 2;
 
     //index of start_point and end_point
     Eigen::Vector3i start_idx, end_idx;
 
     if (!ConvertToIndexAndAdjustStartEndPoints(start_pt, end_pt, start_idx, end_idx)) {
         ROS_ERROR("Unable to handle the initial or end point, force return ! ");
-        return JPS_RET::INIT_ERR;
+        return GRAPH_RET::INIT_ERR;
     }
 
     goalIdx = end_idx; // for jump 'jump' function
@@ -293,7 +282,7 @@ void JPS::JpsSearch(const double step_size, Eigen::Vector3d start_pt, Eigen::Vec
     startPtr -> gScore = 0;
     startPtr -> fScore = getHeu(startPtr, endPtr);   
 
-    OpenSet_.push_back(startPtr);
+    OpenSet_.push(startPtr);
     
     /*some else preparatory works which should be done before while loop*/
     double tentative_gScore;
@@ -310,18 +299,18 @@ void JPS::JpsSearch(const double step_size, Eigen::Vector3d start_pt, Eigen::Vec
         OpenSet_.pop();
 
         // if the current node is the goal 
-        if( currentPtr->index == endPtr->index ){
+        if( currentPtr->index(0)==endPtr->index(0) && currentPtr->index(1)==endPtr->index(1) && currentPtr->index(2)==endPtr->index(2)){
             gridpath_ =  retrievePath(currentPtr);
             ros::Time t2 = ros::Time::now();
-            ROS_WARN("[JPS]{sucess} Time in JPS is %f ms, path cost if %f m", (t2 - t1).toSec() * 1000.0, currentPtr->gScore * resolution );    
-            return JPS_RET::SUCCESS;
+            ROS_WARN("[JPS]{sucess} Time in JPS is %f ms, path cost if %f m", (t2 - t1).toSec() * 1000.0, currentPtr->gScore);    
+            return GRAPH_RET::SUCCESS;
         }
         currentPtr->state = GridNode::CLOSEDSET;
 
         //get the succetion
         JPSGetSucc(currentPtr, neighborPtrSets, edgeCostSets);
         
-        /*For all unexpanded neigbors "m" of node "n", please finish this for loop*/         
+        /*For all unexpanded neigbors "m" of node "n", please finish this for loop*/
         for(int i = 0; i < (int)neighborPtrSets.size(); i++){
             /*
             Judge if the neigbors have been expanded
@@ -342,32 +331,34 @@ void JPS::JpsSearch(const double step_size, Eigen::Vector3d start_pt, Eigen::Vec
             if(!flag_explored){ //discover a new node // todo, modified to make it same as A* origianlly (id != 1)
                 /* As for a new node, do what you need do ,and then put neighbor in open set and record it*/
                 neighborPtr->gScore = tentative_gScore;
-                neighborPtr->fScore = neighborPtr->gScore + getHeu(neighborPtr,endPtr);
+                neighborPtr->fScore = neighborPtr->gScore + getHeu(neighborPtr, endPtr);
                 neighborPtr->cameFrom = currentPtr;
                 neighborPtr->state = GridNode::OPENSET;
 
                 //update the expanding direction
                 for(int i = 0; i < 3; i++){
                     neighborPtr->dir(i) = neighborPtr->index(i) - currentPtr->index(i);
-                    if( neighborPtr->dir(i) != 0)
+                    if( neighborPtr->dir(i) != 0) {
                         neighborPtr->dir(i) /= abs( neighborPtr->dir(i) );
+                    }
                 }
                 // push node "m" into OPEN
-                OpenSet_.push_bach(neighborPtr);
+                OpenSet_.push(neighborPtr);
             }
-            else if(neighborPtr-> gScore > tentative_gScore){ //in open set and need update
+            else if(neighborPtr->gScore > tentative_gScore){ //in open set and need update
                 /* As for a node in open set, update it , maintain the openset ,and then put neighbor in open set and record it*/
-                neighborPtr -> gScore = tentative_gScore;
-                neighborPtr -> fScore = neighborPtr -> gScore + getHeu(neighborPtr,endPtr);
-                neighborPtr -> cameFrom = currentPtr;
+                neighborPtr->gScore = tentative_gScore;
+                neighborPtr->fScore = neighborPtr->gScore + getHeu(neighborPtr, endPtr);
+                neighborPtr->cameFrom = currentPtr;
 
                 // todo: check the code below
                 // if change its parents, update the expanding direction
                 //THIS PART IS ABOUT JPS, you can ignore it when you do your Astar work
                 for(int i = 0; i < 3; i++){
                     neighborPtr->dir(i) = neighborPtr->index(i) - currentPtr->index(i);
-                    if( neighborPtr->dir(i) != 0)
+                    if( neighborPtr->dir(i) != 0) {
                         neighborPtr->dir(i) /= abs( neighborPtr->dir(i) );
+                    }
                 }
             }      
         }
@@ -375,7 +366,7 @@ void JPS::JpsSearch(const double step_size, Eigen::Vector3d start_pt, Eigen::Vec
         if ((t2 - t1).toSec() > 0.2)
         {
             ROS_WARN("Failed in A JPS path searching !!! 0.2 seconds time limit exceeded.");
-            return JPS_RET::SEARCH_ERR;
+            return GRAPH_RET::SEARCH_ERR;
         }
     }
     //if search fails
@@ -387,9 +378,7 @@ void JPS::JpsSearch(const double step_size, Eigen::Vector3d start_pt, Eigen::Vec
 std::vector<Eigen::Vector3d> JPS::getPath() {
   std::vector<Eigen::Vector3d> path;
   for (auto node: gridpath_) {
-    Eigen::Vector3d pos;
-    Index2Coord(node->index, pos);
-    path.push_back(pos);
+    path.push_back(Index2Coord(node->index));
   }
   reverse(path.begin(), path.end());
   return path;

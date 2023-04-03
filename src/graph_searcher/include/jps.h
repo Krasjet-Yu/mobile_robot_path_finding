@@ -1,5 +1,5 @@
-#ifndef _JPS_SEARCHER_H_
-#define _JPS_SEARCHER_H_
+#ifndef _JPS_H_
+#define _JPS_H_
 
 #include <iostream>
 #include <queue>
@@ -7,12 +7,6 @@
 #include "ros/ros.h"
 #include "utils.h"
 #include "occ_grid/occ_map.h"
-
-enum JPS_RET {
-  SUCCESS,
-  INIT_ERR,
-  SEARCH_ERR
-};
 
 class JPS {	
 	private:
@@ -38,13 +32,15 @@ class JPS {
 
 		inline bool Coord2Index(const Eigen::Vector3d &pos, Eigen::Vector3i &idx) const;
 
-		inline bool Index2Coord(const Eigen::Vector3i &idx, Eigen::Vector3d &pos) const;
+		inline Eigen::Vector3d Index2Coord(const Eigen::Vector3i &index) const;
 
 		inline int CheckOccupancy(const Eigen::Vector3d &pos) {return grid_map_->getInflateOccupancy(pos);}
 
 		std::vector<GridNodePtr> retrievePath(GridNodePtr current);
 
 	public:
+		typedef std::shared_ptr<JPS> Ptr;
+
 		JPS3DNeib * jn3d;
 
     JPS();
@@ -59,24 +55,20 @@ class JPS {
     
 		bool jump(const Eigen::Vector3i & curIdx, const Eigen::Vector3i & expDir, Eigen::Vector3i & neiIdx);
 		
-    JPS_RET JpsSearch(const double step_size, Eigen::Vector3d start_pt, Eigen::Vector3d end_pt);
+    GRAPH_RET JpsSearch(const double step_size, Eigen::Vector3d start_pt, Eigen::Vector3d end_pt);
 
 		std::vector<Eigen::Vector3d> getPath();
 };
 
-inline bool Astar::Index2Coord(const Eigen::Vector3i &idx, Eigen::Vector3d &pts) const{
-  pts = ((idx - CENTER_IDX_).cast<double>() * step_size_) + center_;
-  if (idx(0) < 0 || idx(0) >= POOL_SIZE_(0) || idx(1) < 0 || idx(1) >= POOL_SIZE_(1) || idx(2) < 0 || idx(2) >= POOL_SIZE_(2)) {
-		ROS_ERROR("Ran out of pool, index=%d %d %d", idx(0), idx(1), idx(2));
-		return false;
-	}
-  return true;
-}
+inline Eigen::Vector3d JPS::Index2Coord(const Eigen::Vector3i &index) const
+{
+	return ((index - CENTER_IDX_).cast<double>() * step_size_) + center_;
+};
 
-inline bool Astar::Coord2Index(const Eigen::Vector3d &pts, Eigen::Vector3i &idx) const{
+inline bool JPS::Coord2Index(const Eigen::Vector3d &pts, Eigen::Vector3i &idx) const{
   idx = ((pts - center_) * inv_step_size_ + Eigen::Vector3d(0.5, 0.5, 0.5)).cast<int>() + CENTER_IDX_;
   if (idx(0) < 0 || idx(0) >= POOL_SIZE_(0) || idx(1) < 0 || idx(1) >= POOL_SIZE_(1) || idx(2) < 0 || idx(2) >= POOL_SIZE_(2)) {
-		ROS_ERROR("Ran out of pool, index=%d %d %d", idx(0), idx(1), idx(2));
+		ROS_ERROR("Coord2Index out of pool, pts=%lf %lf %lf", pts(0), pts(1), pts(2));
 		return false;
 	}
   return true;

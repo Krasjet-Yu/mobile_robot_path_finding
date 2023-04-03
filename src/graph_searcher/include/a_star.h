@@ -7,12 +7,6 @@
 #include "utils.h"
 #include <queue>
 
-enum ASTAR_RET {
-  SUCCESS,
-  INIT_ERR,
-  SEARCH_ERR
-};
-
 class Astar{
 private:
   env::OccMap::Ptr grid_map_;
@@ -52,7 +46,7 @@ public:
 
   void initOccMap(env::OccMap::Ptr occ_map, const Eigen::Vector3i pool_size);
 
-  ASTAR_RET AstarSearch(const double step_size, Eigen::Vector3d start_pt, Eigen::Vector3d end_pt);
+  GRAPH_RET AstarSearch(const double step_size, Eigen::Vector3d start_pt, Eigen::Vector3d end_pt);
 
   std::vector<Eigen::Vector3d> getPath();
 };

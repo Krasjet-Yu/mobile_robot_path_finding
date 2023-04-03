@@ -9,6 +9,12 @@ constexpr double inf = 1 >> 20;
 struct GridNode;
 typedef GridNode *GridNodePtr;
 
+enum GRAPH_RET {
+	SUCCESS,
+	INIT_ERR,
+	SEARCH_ERR
+};
+
 struct GridNode
 {
   enum enum_state {

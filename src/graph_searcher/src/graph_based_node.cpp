@@ -20,6 +20,7 @@ OF SUCH DAMAGE.
 */
 #include "occ_grid/occ_map.h"
 #include "a_star.h"
+#include "jps.h"
 
 #include "ros/ros.h"
 #include "visualization/visualization.hpp"
@@ -40,6 +41,7 @@ private:
     bool run_a_star_, run_jps_;
 
     Astar::Ptr a_star_;
+    JPS::Ptr jps_;
 
 public:
     GraphBasedPathFinder(const ros::NodeHandle &nh) : nh_(nh)
@@ -54,15 +56,21 @@ public:
         wp_sub_ = nh_.subscribe("/goal", 1, &GraphBasedPathFinder::rcvWaypointsCallback, this);
         // glb_sub_ = nh_.subscribe("/occ_map/glb_map", 1, &GraphBasedPathFinder::rcvPointCloudCallBack, this);
         execution_timer_ = nh_.createTimer(ros::Duration(1), &GraphBasedPathFinder::executionCallback, this);
-
-        // Path Finding Algorithms
-        a_star_.reset(new Astar);
-        a_star_->initOccMap(env_ptr_, Eigen::Vector3i(100, 100, 100));
-
-        start_.setZero();
-
+        
         nh_.param("search/run_a_star", run_a_star_, false);
         nh_.param("search/run_jps", run_jps_, false);
+
+        // Path Finding Algorithms
+        if (run_a_star_) {
+            a_star_.reset(new Astar);
+            a_star_->initOccMap(env_ptr_, Eigen::Vector3i(100, 100, 100));
+        }
+        if (run_jps_) {
+            jps_.reset(new JPS);
+            jps_->initOccMap(env_ptr_, Eigen::Vector3i(100, 100, 100));
+        }
+
+        start_.setZero();
     }
 
     ~GraphBasedPathFinder(){}
@@ -80,13 +88,13 @@ public:
         if (run_a_star_) {
             ROS_INFO_STREAM("\n-----------------------------\n[RUNNING] Run AStar !!! ");
             int a_star_res = a_star_->AstarSearch(/*(start_-goal_).norm()/10+0.05*/ env_ptr_->getResolution(), start_, goal_);
-            if (a_star_res == ASTAR_RET::SUCCESS) {
+            if (a_star_res == GRAPH_RET::SUCCESS) {
                 ROS_INFO_STREAM("\n-----------------------------\n[FINISH] Finish AStar !!! ");
                 std::vector<Eigen::Vector3d> final_path = a_star_->getPath();
                 vis_ptr_->visualize_path(final_path, "a_star_final_path");
                 vis_ptr_->visualize_pointcloud(final_path, "a_star_final_wpts");
             }
-            else if (a_star_res == ASTAR_RET::SEARCH_ERR /*&& i + 1 < segment_ids.size()*/) { // connect the next segment
+            else if (a_star_res == GRAPH_RET::SEARCH_ERR /*&& i + 1 < segment_ids.size()*/) { // connect the next segment
                 // segment_ids[i].second = segment_ids[i + 1].second;
                 // segment_ids.erase(segment_ids.begin() + i + 1);
                 // --i;
@@ -101,7 +109,21 @@ public:
 
         if (run_jps_)
         {
-            ROS_INFO_STREAM("\n-----------------------------\n【RUNNING】Run JPS !!! ");
+            ROS_INFO_STREAM("\n-----------------------------\n[RUNNING] Run JPS !!! ");
+            int jps_res = jps_->JpsSearch(env_ptr_->getResolution(), start_, goal_);
+            if (jps_res == GRAPH_RET::SUCCESS) {
+                ROS_INFO_STREAM("\n-----------------------------\n[FINISH] Finish JPS !!! ");
+                std::vector<Eigen::Vector3d> final_path = jps_->getPath();
+                vis_ptr_->visualize_path(final_path, "jps_final_path");
+                vis_ptr_->visualize_pointcloud(final_path, "jps_final_wpts");
+            }
+            else if (jps_res == GRAPH_RET::SEARCH_ERR) {
+                ROS_WARN("A conor case 2, I have never exeam it.");
+            }
+            else {
+                ROS_ERROR("JPS error, force return!");
+                return;
+            }
         }
 
         start_ = goal_;

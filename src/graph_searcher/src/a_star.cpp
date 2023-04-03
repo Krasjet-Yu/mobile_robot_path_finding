@@ -121,7 +121,7 @@ bool Astar::ConvertToIndexAndAdjustStartEndPoints(Eigen::Vector3d start_pt, Eige
     return true;
 }
 
-ASTAR_RET Astar::AstarSearch(const double step_size, Eigen::Vector3d start_pt, Eigen::Vector3d end_pt){
+GRAPH_RET Astar::AstarSearch(const double step_size, Eigen::Vector3d start_pt, Eigen::Vector3d end_pt){
   ros::Time t1 = ros::Time::now();
   ++rounds_;
   
@@ -132,7 +132,7 @@ ASTAR_RET Astar::AstarSearch(const double step_size, Eigen::Vector3d start_pt, E
   Eigen::Vector3i start_idx, end_idx;
   if (!ConvertToIndexAndAdjustStartEndPoints(start_pt, end_pt, start_idx, end_idx)) {
     ROS_ERROR("Unable to handle the initial or end point, force return ! ");
-    return ASTAR_RET::INIT_ERR;
+    return GRAPH_RET::INIT_ERR;
   }
 
   GridNodePtr currentPtr = NULL;
@@ -169,7 +169,7 @@ ASTAR_RET Astar::AstarSearch(const double step_size, Eigen::Vector3d start_pt, E
       gridpath_ =  retrievePath(currentPtr);
       ros::Time t2 = ros::Time::now();
       ROS_WARN("[AStar]{sucess} Time in AStar is %f ms, path cost if %f m", (t2 - t1).toSec() * 1000.0, currentPtr->gScore);    
-      return ASTAR_RET::SUCCESS;
+      return GRAPH_RET::SUCCESS;
     } 
 
     currentPtr->state = GridNode::CLOSEDSET;
@@ -231,7 +231,7 @@ ASTAR_RET Astar::AstarSearch(const double step_size, Eigen::Vector3d start_pt, E
     if ((t2 - t1).toSec() > 0.2)
     {
         ROS_WARN("Failed in A star path searching !!! 0.2 seconds time limit exceeded.");
-        return ASTAR_RET::SEARCH_ERR;
+        return GRAPH_RET::SEARCH_ERR;
     }
   }
   ros::Time t2 = ros::Time::now();
@@ -239,7 +239,7 @@ ASTAR_RET Astar::AstarSearch(const double step_size, Eigen::Vector3d start_pt, E
   // if ((t2 - t1).toSec() > 0.1)
   ROS_WARN("Time consume in A star path finding is %.3fs, iter=%d", (t2 - t1).toSec(), num_iter);
 
-  return ASTAR_RET::SEARCH_ERR;
+  return GRAPH_RET::SEARCH_ERR;
 }
 
 std::vector<Eigen::Vector3d> Astar::getPath() {

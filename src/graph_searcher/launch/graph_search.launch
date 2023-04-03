@@ -22,6 +22,7 @@
 
       <param name="occ_map/resolution" value="0.1"/>
 
-      <param name="search/run_a_star" value="true"/>
+      <param name="search/run_a_star" value="false"/>
+      <param name="search/run_jps" value="true"/>
   </node>
 </launch>
