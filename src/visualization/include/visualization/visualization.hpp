@@ -212,7 +212,7 @@ namespace visualization
                 publisher_map_[topic] = pub;
             }
             visualization_msgs::Marker marker;
-            marker.header.frame_id = "map";
+            marker.header.frame_id = "world";
             marker.type = visualization_msgs::Marker::SPHERE;
             marker.action = visualization_msgs::Marker::ADD;
             setMarkerColor(marker, color, a);
@@ -239,7 +239,7 @@ namespace visualization
                 point_cloud.points.emplace_back(pt[0], pt[1], pt[2]);
             }
             pcl::toROSMsg(point_cloud, point_cloud_msg);
-            point_cloud_msg.header.frame_id = "map";
+            point_cloud_msg.header.frame_id = "world";
             point_cloud_msg.header.stamp = ros::Time::now();
             publisher_map_[topic].publish(point_cloud_msg);
         }
@@ -255,7 +255,7 @@ namespace visualization
             }
             nav_msgs::Path path_msg;
             geometry_msgs::PoseStamped tmpPose;
-            tmpPose.header.frame_id = "map";
+            tmpPose.header.frame_id = "world";
             for (const auto &pt : path)
             {
                 tmpPose.pose.position.x = pt[0];
@@ -263,7 +263,7 @@ namespace visualization
                 tmpPose.pose.position.z = pt[2];
                 path_msg.poses.push_back(tmpPose);
             }
-            path_msg.header.frame_id = "map";
+            path_msg.header.frame_id = "world";
             path_msg.header.stamp = ros::Time::now();
             publisher_map_[topic].publish(path_msg);
         }
@@ -282,7 +282,7 @@ namespace visualization
                 publisher_map_[topic] = pub;
             }
             visualization_msgs::Marker marker;
-            marker.header.frame_id = "map";
+            marker.header.frame_id = "world";
             marker.type = visualization_msgs::Marker::SPHERE;
             marker.action = visualization_msgs::Marker::ADD;
             marker.id = 0;
@@ -317,7 +317,7 @@ namespace visualization
                 publisher_map_[topic] = pub;
             }
             visualization_msgs::Marker marker;
-            marker.header.frame_id = "map";
+            marker.header.frame_id = "world";
             marker.type = visualization_msgs::Marker::SPHERE;
             marker.action = visualization_msgs::Marker::ADD;
             marker.id = 0;
@@ -348,7 +348,7 @@ namespace visualization
                 publisher_map_[topic] = pub;
             }
             visualization_msgs::Marker marker;
-            marker.header.frame_id = "map";
+            marker.header.frame_id = "world";
             marker.type = visualization_msgs::Marker::LINE_LIST;
             marker.action = visualization_msgs::Marker::ADD;
             setMarkerPose(marker, 0, 0, 0);
@@ -383,7 +383,7 @@ namespace visualization
             visualization_msgs::Marker arrow_msg;
             arrow_msg.type = visualization_msgs::Marker::ARROW;
             arrow_msg.action = visualization_msgs::Marker::ADD;
-            arrow_msg.header.frame_id = "map";
+            arrow_msg.header.frame_id = "world";
             arrow_msg.id = 0;
             arrow_msg.points.resize(2);
             setMarkerPose(arrow_msg, 0, 0, 0);
@@ -442,7 +442,7 @@ namespace visualization
             visualization_msgs::Marker path_msg;
             path_msg.type = visualization_msgs::Marker::LINE_STRIP;
             path_msg.action = visualization_msgs::Marker::ADD;
-            path_msg.header.frame_id = "map";
+            path_msg.header.frame_id = "world";
             path_msg.id = 0;
             setMarkerPose(path_msg, 0, 0, 0);
             setMarkerScale(path_msg, scale, scale, scale);
@@ -488,7 +488,7 @@ namespace visualization
             visualization_msgs::Marker path_msg;
             path_msg.type = visualization_msgs::Marker::LINE_STRIP;
             path_msg.action = visualization_msgs::Marker::ADD;
-            path_msg.header.frame_id = "map";
+            path_msg.header.frame_id = "world";
             path_msg.id = 0;
             setMarkerPose(path_msg, 0, 0, 0);
             setMarkerScale(path_msg, scale, scale, scale);

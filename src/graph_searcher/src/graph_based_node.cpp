@@ -22,7 +22,7 @@ OF SUCH DAMAGE.
 #include "a_star.h"
 
 #include "ros/ros.h"
-#include "visualization.hpp"
+#include "visualization/visualization.hpp"
 #include "geometry_msgs/PoseStamped.h"
 
 class GraphBasedPathFinder
@@ -61,8 +61,8 @@ public:
 
         start_.setZero();
 
-        nh_.param("run_a_star", run_a_star_, true);
-        nh_.param("run_jps", run_jps_, true);
+        nh_.param("search/run_a_star", run_a_star_, false);
+        nh_.param("search/run_jps", run_jps_, false);
     }
 
     ~GraphBasedPathFinder(){}
@@ -71,14 +71,17 @@ public:
     {
         goal_[0] = wp->pose.position.x;
         goal_[1] = wp->pose.position.y;
-        goal_[2] = wp->pose.position.z;
+        // goal_[2] = wp->pose.position.z;
+        goal_[2] = 2.0;
         ROS_INFO_STREAM("\n-----------------------------\ngoal rcved at " << goal_.transpose());
         vis_ptr_->visualize_a_ball(start_, 0.3, "start", visualization::Color::pink);
         vis_ptr_->visualize_a_ball(goal_, 0.3, "goal", visualization::Color::steelblue);
 
         if (run_a_star_) {
+            ROS_INFO_STREAM("\n-----------------------------\n[RUNNING] Run AStar !!! ");
             int a_star_res = a_star_->AstarSearch(/*(start_-goal_).norm()/10+0.05*/ env_ptr_->getResolution(), start_, goal_);
             if (a_star_res == ASTAR_RET::SUCCESS) {
+                ROS_INFO_STREAM("\n-----------------------------\n[FINISH] Finish AStar !!! ");
                 std::vector<Eigen::Vector3d> final_path = a_star_->getPath();
                 vis_ptr_->visualize_path(final_path, "a_star_final_path");
                 vis_ptr_->visualize_pointcloud(final_path, "a_star_final_wpts");
@@ -98,7 +101,7 @@ public:
 
         if (run_jps_)
         {
-
+            ROS_INFO_STREAM("\n-----------------------------\n【RUNNING】Run JPS !!! ");
         }
 
         start_ = goal_;

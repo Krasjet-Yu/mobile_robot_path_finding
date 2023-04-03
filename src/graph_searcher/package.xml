@@ -14,6 +14,7 @@
   <build_depend>std_msgs</build_depend>
   <build_depend>visualization_msgs</build_depend>
   <build_depend>occ_grid</build_depend>
+  <build_depend>visualization</build_depend>
 
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
@@ -21,6 +22,7 @@
   <run_depend>std_msgs</run_depend>
   <run_depend>visualization_msgs</run_depend>
   <run_depend>occ_grid</run_depend>
+  <run_depend>visualization</run_depend>
   
   <export>
 

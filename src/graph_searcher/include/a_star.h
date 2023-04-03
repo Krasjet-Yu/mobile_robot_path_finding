@@ -4,43 +4,13 @@
 #include <ros/ros.h>
 #include <Eigen/Eigen>
 #include "occ_grid/occ_map.h"
+#include "utils.h"
 #include <queue>
-
-constexpr double inf = 1 >> 20;
-struct GridNode;
-typedef GridNode *GridNodePtr;
 
 enum ASTAR_RET {
   SUCCESS,
   INIT_ERR,
   SEARCH_ERR
-};
-
-struct GridNode
-{
-  enum enum_state {
-    OPENSET = 1,
-    CLOSEDSET = 2,
-    UNDEFIND = 3
-  };
-
-  /* init variable */
-
-  enum enum_state state{UNDEFIND};
-
-  Eigen::Vector3i index;
-  int round;
-
-  double gScore{inf}, fScore{inf};
-
-  GridNodePtr cameFrom{NULL};
-};
-
-class NodeComparator {
-public:
-  bool operator()(GridNodePtr node1, GridNodePtr node2) {
-    return node1->fScore > node2->fScore;
-  }
 };
 
 class Astar{
@@ -61,7 +31,7 @@ private:
 
   std::vector<GridNodePtr> retrievePath(GridNodePtr current);
 
-  int rounds_;
+  int rounds_{0};
   double step_size_, inv_step_size_;
 	Eigen::Vector3d center_;
 	Eigen::Vector3i CENTER_IDX_, POOL_SIZE_;

@@ -5,7 +5,9 @@
 
     <arg name="start_x" default=" 0.0"/>
     <arg name="start_y" default=" 0.0"/>
-    <arg name="start_z" default=" 1.0"/>
+    <arg name="start_z" default=" 0.0"/>
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find graph_searcher)/launch/rviz_config/demo.rviz"/> 
 
     <node pkg ="map_generator" name ="random_forest" type ="random_forest" output = "screen">    
         
@@ -35,7 +37,5 @@
         <remap from="~goal" to="/goal"/>
         <param name="waypoint_type" value="manual-lonely-waypoint"/>    
     </node>
-
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find graph_searcher)/launch/rviz_config/demo.rviz"/> 
 
 </launch>

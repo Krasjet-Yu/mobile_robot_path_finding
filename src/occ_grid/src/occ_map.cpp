@@ -32,14 +32,12 @@ namespace env
   {
     if (is_global_map_valid_)
       return;
-
     pcl::PointCloud<pcl::PointXYZ> global_cloud;
     pcl::fromROSMsg(*msg, global_cloud);
     // ROS_ERROR_STREAM(", global_cloud.points.size(): " << global_cloud.points.size());
 
     if (global_cloud.points.size() == 0)
       return;
-
     pcl::PointXYZ pt;
     Eigen::Vector3d p3d;
     for (size_t i = 0; i < global_cloud.points.size(); ++i)
@@ -67,8 +65,7 @@ namespace env
     glb_cloud_ptr_->width = glb_cloud_ptr_->points.size();
     glb_cloud_ptr_->height = 1;
     glb_cloud_ptr_->is_dense = true;
-    glb_cloud_ptr_->header.frame_id = "map";
-
+    glb_cloud_ptr_->header.frame_id = "world";
     cout << "glb occ set" << endl;
     global_cloud_sub_.shutdown();
   }
@@ -123,7 +120,7 @@ namespace env
       }
 
     global_occ_vis_timer_ = node_.createTimer(ros::Duration(5), &OccMap::globalOccVisCallback, this);
-    global_cloud_sub_ = node_.subscribe<sensor_msgs::PointCloud2>("/global_cloud", 1, &OccMap::globalCloudCallback, this);
+    global_cloud_sub_ = node_.subscribe<sensor_msgs::PointCloud2>("/global_map", 1, &OccMap::globalCloudCallback, this);
     glb_occ_pub_ = node_.advertise<sensor_msgs::PointCloud2>("/occ_map/glb_map", 1);
 
     glb_cloud_ptr_ = boost::make_shared<pcl::PointCloud<pcl::PointXYZ>>();

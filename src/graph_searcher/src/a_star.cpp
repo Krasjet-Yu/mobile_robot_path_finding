@@ -55,13 +55,13 @@ double Astar::getDiagHeu(GridNodePtr node1, GridNodePtr node2)
     return h;
 }
 
-std::vector<GridNodePtr> Astar::retrievePath(GridNodePtr current) {
+std::vector<GridNodePtr> Astar::retrievePath(GridNodePtr currentPtr) {
   vector<GridNodePtr> path;
-  path.push_back(current);
+  path.push_back(currentPtr);
 
-  while (current->cameFrom != NULL) {
-      current = current->cameFrom;
-      path.push_back(current);
+  while (currentPtr->cameFrom != NULL) {
+      currentPtr = currentPtr->cameFrom;
+      path.push_back(currentPtr);
   }
 
   return path;
@@ -135,7 +135,7 @@ ASTAR_RET Astar::AstarSearch(const double step_size, Eigen::Vector3d start_pt, E
     return ASTAR_RET::INIT_ERR;
   }
 
-  GridNodePtr current = NULL;
+  GridNodePtr currentPtr = NULL;
   GridNodePtr neighborPtr = NULL;
 
   double tentative_gScore;
@@ -162,14 +162,17 @@ ASTAR_RET Astar::AstarSearch(const double step_size, Eigen::Vector3d start_pt, E
 
   while(!OpenSet_.empty()) {
     ++num_iter;
-    current = OpenSet_.top();
+    currentPtr = OpenSet_.top();
     OpenSet_.pop();
-    current->state = GridNode::CLOSEDSET;
 
-    if (current->index(0)==endPtr->index(0) && current->index(1)==endPtr->index(1) && current->index(2)==endPtr->index(2)) {
-      gridpath_ =  retrievePath(current);
+    if (currentPtr->index(0)==endPtr->index(0) && currentPtr->index(1)==endPtr->index(1) && currentPtr->index(2)==endPtr->index(2)) {
+      gridpath_ =  retrievePath(currentPtr);
+      ros::Time t2 = ros::Time::now();
+      ROS_WARN("[AStar]{sucess} Time in AStar is %f ms, path cost if %f m", (t2 - t1).toSec() * 1000.0, currentPtr->gScore);    
       return ASTAR_RET::SUCCESS;
     } 
+
+    currentPtr->state = GridNode::CLOSEDSET;
 
     for (int dx = -1; dx <= 1; ++dx) {
       for (int dy = -1; dy <= 1; ++dy) {
@@ -177,9 +180,9 @@ ASTAR_RET Astar::AstarSearch(const double step_size, Eigen::Vector3d start_pt, E
 
           if (dx == 0 && dy == 0 && dz == 0) continue;
           
-          int nx = current->index(0) + dx;
-          int ny = current->index(1) + dy;
-          int nz = current->index(2) + dz;
+          int nx = (currentPtr->index)(0) + dx;
+          int ny = (currentPtr->index)(1) + dy;
+          int nz = (currentPtr->index)(2) + dz;
           
           if (nx < 1 || nx >= POOL_SIZE_(0)-1 || ny < 1 || ny >= POOL_SIZE_(1)-1 || nz < 1 || nz >= POOL_SIZE_(2)-1)
             continue;
@@ -207,19 +210,19 @@ ASTAR_RET Astar::AstarSearch(const double step_size, Eigen::Vector3d start_pt, E
           }
 
           double static_cost = sqrt(dx * dx + dy * dy + dz * dz);
-          tentative_gScore = current->gScore + static_cost;
+          tentative_gScore = currentPtr->gScore + static_cost;
 
           if (!flag_explored) {
-            neighborPtr->cameFrom = current;
+            neighborPtr->cameFrom = currentPtr;
             neighborPtr->gScore = tentative_gScore;
-            neighborPtr->fScore = tentative_gScore + getHeu(current, neighborPtr);
+            neighborPtr->fScore = tentative_gScore + getHeu(currentPtr, neighborPtr);
             neighborPtr->state = GridNode::OPENSET;
             OpenSet_.push(neighborPtr);
           }
           else if(neighborPtr->gScore > tentative_gScore) {
-            neighborPtr->cameFrom = current;
+            neighborPtr->cameFrom = currentPtr;
             neighborPtr->gScore = tentative_gScore;
-            neighborPtr->fScore = tentative_gScore + getHeu(current, neighborPtr);
+            neighborPtr->fScore = tentative_gScore + getHeu(currentPtr, neighborPtr);
           }
         }
       }
@@ -233,8 +236,8 @@ ASTAR_RET Astar::AstarSearch(const double step_size, Eigen::Vector3d start_pt, E
   }
   ros::Time t2 = ros::Time::now();
 
-  if ((t2 - t1).toSec() > 0.1)
-      ROS_WARN("Time consume in A star path finding is %.3fs, iter=%d", (t2 - t1).toSec(), num_iter);
+  // if ((t2 - t1).toSec() > 0.1)
+  ROS_WARN("Time consume in A star path finding is %.3fs, iter=%d", (t2 - t1).toSec(), num_iter);
 
   return ASTAR_RET::SEARCH_ERR;
 }

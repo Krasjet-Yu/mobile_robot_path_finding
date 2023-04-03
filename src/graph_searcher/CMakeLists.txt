@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
     nav_msgs
     visualization_msgs 
     occ_grid
+    visualization
 )
 
 find_package(Eigen3 REQUIRED)

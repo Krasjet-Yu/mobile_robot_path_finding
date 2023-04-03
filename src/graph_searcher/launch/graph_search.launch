@@ -4,22 +4,24 @@
 <arg name="map_size_y" default="10.0"/>
 <arg name="map_size_z" default=" 5.0"/>
 
-<arg name="start_x" default=" 0.0"/>
-<arg name="start_y" default=" 0.0"/>
-<arg name="start_z" default=" 1.0"/>
+<arg name="start_x" default=" -5.0"/>
+<arg name="start_y" default=" -5.0"/>
+<arg name="start_z" default=" -1.0"/>
 
   <node pkg="graph_searcher" type="graph_search_node" name="graph_search_node" output="screen" required = "true">
       <remap from="~waypoints"       to="/waypoint_generator/waypoints"/>
       <remap from="~map"             to="/random_forest/global_map"/> 
 
-      <param name="map/margin"       value="0.0" />
-      <param name="map/resolution"   value="0.2" />
-      <param name="map/x_size"       value="$(arg map_size_x)"/>
-      <param name="map/y_size"       value="$(arg map_size_y)"/>
-      <param name="map/z_size"       value="$(arg map_size_z)"/>
+      <param name="occ_map/origin_x" value="$(arg start_x)"/>
+      <param name="occ_map/origin_y" value="$(arg start_y)"/>
+      <param name="occ_map/origin_z" value="$(arg start_z)"/>
 
-      <param name="planning/start_x" value="$(arg start_x)"/>
-      <param name="planning/start_y" value="$(arg start_y)"/>
-      <param name="planning/start_z" value="$(arg start_z)"/>
+      <param name="occ_map/map_size_x" value="$(arg map_size_x)"/>
+      <param name="occ_map/map_size_y" value="$(arg map_size_y)"/>
+      <param name="occ_map/map_size_z" value="$(arg map_size_z)"/>
+
+      <param name="occ_map/resolution" value="0.1"/>
+
+      <param name="search/run_a_star" value="true"/>
   </node>
 </launch>
