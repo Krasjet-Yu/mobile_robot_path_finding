@@ -1,7 +1,55 @@
-#ifndef _JPS_UTILS_H_
-#define _JPS_UTILS_H_
+#ifndef _UTILS_H_
+#define _UTILS_H_
 
 #include <iostream>
+#include <Eigen/Eigen>
+
+constexpr double inf = 1 >> 20;
+
+struct GridNode;
+typedef GridNode *GridNodePtr;
+
+enum GRAPH_RET {
+	SUCCESS,
+	INIT_ERR,
+	SEARCH_ERR
+};
+
+struct GridNode
+{
+  enum enum_state {
+    OPENSET = 1,
+    CLOSEDSET = 2,
+    UNDEFIND = 3
+  };
+
+  /* init variable */
+
+  enum enum_state state{UNDEFIND};
+
+  Eigen::Vector3i index;
+	Eigen::Vector3i dir;  // direction of expanding
+  int round;
+
+  double gScore{inf}, fScore{inf};
+
+  GridNodePtr cameFrom{NULL};
+
+	GridNode() {
+		dir = Eigen::Vector3i::Zero();
+		cameFrom = NULL;
+		gScore = inf;
+		fScore = inf;
+	}
+};
+
+class NodeComparator {
+public:
+  bool operator()(GridNodePtr node1, GridNodePtr node2) {
+    return node1->fScore > node2->fScore;
+  }
+};
+
 ///Search and prune neighbors for JPS 3D
 struct JPS3DNeib {
 	// for each (dx,dy,dz) these contain:
