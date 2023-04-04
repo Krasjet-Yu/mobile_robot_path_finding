@@ -333,3 +333,44 @@ void JPS3DNeib::FNeib( int dx, int dy, int dz, int norm1, int dev,
             }
     }
 }
+
+double Heuristics::getDiagonalHeu(GridNodePtr node1, GridNodePtr node2) {
+    double dx = std::abs(node1->index(0) - node2->index(0));
+    double dy = std::abs(node1->index(1) - node2->index(1));
+    double dz = std::abs(node1->index(2) - node2->index(2));
+
+    double h = 0.0;
+    int diag = std::min(std::min(dx, dy), dz);
+    dx -= diag;
+    dy -= diag;
+    dz -= diag;
+
+    if (dx == 0)
+    {
+        h = 1.0 * std::sqrt(3.0) * diag + std::sqrt(2.0) * std::min(dy, dz) + 1.0 * std::abs(dy - dz);
+    }
+    if (dy == 0)
+    {
+        h = 1.0 * std::sqrt(3.0) * diag + std::sqrt(2.0) * std::min(dx, dz) + 1.0 * std::abs(dx - dz);
+    }
+    if (dz == 0)
+    {
+        h = 1.0 * std::sqrt(3.0) * diag + std::sqrt(2.0) * std::min(dx, dy) + 1.0 * std::abs(dx - dy);
+    }
+    return h;
+}
+
+double Heuristics::getEculideanHeu(GridNodePtr node1, GridNodePtr node2) {
+    // TODO
+    return 0.0;
+}
+
+double Heuristics::getLinftyHeu(GridNodePtr node1, GridNodePtr node2) {
+    // TODO
+    return 0.0;
+}
+
+double Heuristics::getManhattanHeu(GridNodePtr node1, GridNodePtr node2) {
+    // TODO
+    return 0.0;
+}
