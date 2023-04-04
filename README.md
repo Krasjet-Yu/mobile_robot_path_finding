@@ -10,12 +10,24 @@ catkin_make
 
 ```shell
 source devel/setup.bash
-roslaunch graph_searcher map_gen.launch
+roslaunch graph_searcher rviz.launch
 ```
 
 ```shell
 source devel/setup.bash
 roslaunch graph_searcher graph_search.launch
+```
+
+## Sample Guid Path Finding
+which refers to: https://github.com/ZJU-FAST-Lab/sampling-based-path-finding.git
+```shell
+source devel/setup.bash
+roslaunch sample_guider rviz.launch
+```
+
+```shell
+source devel/setup.bash
+roslaunch sample_guider sample_search.launch
 ```
 
 ## 代码提交须知
