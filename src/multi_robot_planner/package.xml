@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>graph_searcher</name>
+  <name>multi_robot_planner</name>
   <version>0.0.1</version>
-  <description> Path searching methods on 3d grid map </description>
+  <description> Multi Robot Path Finding methods on 3d grid map </description>
   <maintainer email="krasjet.ziping@gmail.com">krasjet</maintainer>
   <license>BSD</license>
 

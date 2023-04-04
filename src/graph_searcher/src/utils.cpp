@@ -1,4 +1,4 @@
-#include "JPS_utils.h"
+#include "utils.h"
 
 constexpr int JPS3DNeib::nsz[4][2];
 JPS3DNeib::JPS3DNeib() 
