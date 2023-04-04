@@ -4,6 +4,14 @@ JPS::JPS () {
     jn3d = new JPS3DNeib();
 }
 
+JPS::~JPS() {
+    for (int i  = 0; i < POOL_SIZE_(0); ++i)
+        for (int j = 0; j < POOL_SIZE_(1); ++j)
+            for (int k = 0; k < POOL_SIZE_(2); ++k) 
+                delete GridNodeMap_[i][j][k];
+    delete jn3d;
+}
+
 void JPS::initOccMap(env::OccMap::Ptr occ_map, const Eigen::Vector3i pool_size) {
     POOL_SIZE_ = pool_size;
     CENTER_IDX_ = pool_size / 2;

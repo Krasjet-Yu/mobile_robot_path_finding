@@ -45,7 +45,7 @@ class JPS {
 
     JPS();
     	
-    ~JPS() { delete jn3d; };
+    ~JPS();
 
 		void initOccMap(env::OccMap::Ptr occ_map, const Eigen::Vector3i pool_size);
 
