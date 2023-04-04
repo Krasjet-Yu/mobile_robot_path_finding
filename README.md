@@ -1,4 +1,10 @@
-# mobile_robot_path_finding
+# Mobile Robot Path Finding
+
+## Introduction
+
+This is a repo, where you can switch between different path finding algoirthms and compare them using rviz. And more importantly, these algorithms can be easily proted to the front end of the current mainstream motion planning algorithms.
+
+Then, starting download code:
 
 ```python-repl
 git clone https://github.com/Krasjet-Yu/mobile_robot_path_finding.git
@@ -30,6 +36,11 @@ source devel/setup.bash
 roslaunch sample_guider sample_search.launch
 ```
 
+## Multi Agent Path Finding (MAPF)
+TODO:
+1. Multi PoseArray (multi-start and multi-goal) for visualization
+2. Add multiple MAPF algorithms which can be switched at will (can ref: https://github.com/whoenig/libMultiRobotPlanning)
+
 ## 代码提交须知
 1. 开发前，更新Features TODO(记录Feature内容，开发周期)
 2. 开发前，从最新的master切出开发分支，分支的格式参照 feature-{date}-{username}-{feature_name}
@@ -46,6 +57,10 @@ roslaunch sample_guider sample_search.launch
   - RRT#
   - GUILD
 - Multi Agent Search
+  - HCA*
+  - Single-Agent A*
+  - Independence Detection(ID)
+  - M*
   - CBS
   - ECBS
 - Visualization
