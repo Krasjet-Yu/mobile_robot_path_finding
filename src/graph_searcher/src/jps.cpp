@@ -159,35 +159,8 @@ inline bool JPS::hasForced(const Eigen::Vector3i & idx, const Eigen::Vector3i & 
 }
 
 inline double JPS::getHeu(GridNodePtr node1, GridNodePtr node2) {
-  return tie_breaker_ * getDiagHeu(node1, node2);
+  return tie_breaker_ * heu->getDiagonalHeu(node1, node2);
 } 
-
-double JPS::getDiagHeu(GridNodePtr node1, GridNodePtr node2)
-{
-    double dx = abs(node1->index(0) - node2->index(0));
-    double dy = abs(node1->index(1) - node2->index(1));
-    double dz = abs(node1->index(2) - node2->index(2));
-
-    double h = 0.0;
-    int diag = min(min(dx, dy), dz);
-    dx -= diag;
-    dy -= diag;
-    dz -= diag;
-
-    if (dx == 0)
-    {
-        h = 1.0 * sqrt(3.0) * diag + sqrt(2.0) * min(dy, dz) + 1.0 * abs(dy - dz);
-    }
-    if (dy == 0)
-    {
-        h = 1.0 * sqrt(3.0) * diag + sqrt(2.0) * min(dx, dz) + 1.0 * abs(dx - dz);
-    }
-    if (dz == 0)
-    {
-        h = 1.0 * sqrt(3.0) * diag + sqrt(2.0) * min(dx, dy) + 1.0 * abs(dx - dy);
-    }
-    return h;
-}
 
 std::vector<GridNodePtr> JPS::retrievePath(GridNodePtr currentPtr) {
   vector<GridNodePtr> path;

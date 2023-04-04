@@ -2,6 +2,7 @@
 #define _UTILS_H_
 
 #include <iostream>
+#include <cmath>
 #include <Eigen/Eigen>
 
 constexpr double inf = 1 >> 20;
@@ -42,6 +43,16 @@ struct GridNode
 		fScore = inf;
 	}
 };
+
+struct Heuristics {
+
+	double getDiagonalHeu(GridNodePtr node1, GridNodePtr node2);
+	double getEculideanHeu(GridNodePtr node1, GridNodePtr node2);
+	double getLinftyHeu(GridNodePtr node1, GridNodePtr node2);
+	double getManhattanHeu(GridNodePtr node1, GridNodePtr node2);
+
+};
+
 
 class NodeComparator {
 public:

@@ -13,8 +13,6 @@ private:
 
   inline double getHeu(GridNodePtr node1, GridNodePtr node2);
 
-  double getDiagHeu(GridNodePtr node1, GridNodePtr node2);
-
   bool ConvertToIndexAndAdjustStartEndPoints(const Eigen::Vector3d start_pt, const Eigen::Vector3d end_pt, Eigen::Vector3i &start_idx, Eigen::Vector3i &end_idx);
 
   inline bool Coord2Index(const Eigen::Vector3d &pts, Eigen::Vector3i &idx) const;
@@ -39,6 +37,8 @@ private:
 
 public:
   typedef std::shared_ptr<Astar> Ptr;
+
+  Heuristics *heu;
 
   Astar(){};
   
