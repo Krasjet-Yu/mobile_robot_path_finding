@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+    <node pkg="rviz" type="rviz" name="rviz" output="screen" args="-d $(find sample_guider)/launch/traj.rviz"/>
+    <include file="$(find sample_guider)/launch/map.launch"/>
+</launch>

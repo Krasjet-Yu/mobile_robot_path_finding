@@ -1,12 +1,17 @@
 <launch>
 
-<arg name="map_size_x" default="10.0"/>
-<arg name="map_size_y" default="10.0"/>
-<arg name="map_size_z" default=" 5.0"/>
+<arg name="map_size_x" default="50.0"/>
+<arg name="map_size_y" default="50.0"/>
+<arg name="map_size_z" default=" 8.0"/>
 
-<arg name="start_x" default=" -5.0"/>
-<arg name="start_y" default=" -5.0"/>
+<arg name="start_x" default=" -25.0"/>
+<arg name="start_y" default=" -25.0"/>
 <arg name="start_z" default=" -1.0"/>
+
+<arg name="resolution" value="0.5" />
+
+<arg name="run_a_star" default="true"/>
+<arg name="run_jps"    default="false"/>
 
   <node pkg="graph_searcher" type="graph_search_node" name="graph_search_node" output="screen" required = "true">
       <remap from="~waypoints"       to="/waypoint_generator/waypoints"/>
@@ -20,9 +25,9 @@
       <param name="occ_map/map_size_y" value="$(arg map_size_y)"/>
       <param name="occ_map/map_size_z" value="$(arg map_size_z)"/>
 
-      <param name="occ_map/resolution" value="0.1"/>
+      <param name="occ_map/resolution" value="$(arg resolution)" type="double"/>
 
-      <param name="search/run_a_star" value="false"/>
-      <param name="search/run_jps" value="true"/>
+      <param name="search/run_a_star" value="$(arg run_a_star)"/>
+      <param name="search/run_jps"    value="$(arg run_jps)"/>
   </node>
 </launch>

@@ -64,10 +64,14 @@ public:
         if (run_a_star_) {
             a_star_.reset(new Astar);
             a_star_->initOccMap(env_ptr_, Eigen::Vector3i(100, 100, 100));
+            vis_ptr_->registe<nav_msgs::Path>("a_star_final_path");
+            vis_ptr_->registe<sensor_msgs::PointCloud2>("a_star_final_wpts");
         }
         if (run_jps_) {
             jps_.reset(new JPS);
             jps_->initOccMap(env_ptr_, Eigen::Vector3i(100, 100, 100));
+            vis_ptr_->registe<nav_msgs::Path>("jps_final_path");
+            vis_ptr_->registe<sensor_msgs::PointCloud2>("jps_final_wpts");
         }
 
         start_.setZero();
