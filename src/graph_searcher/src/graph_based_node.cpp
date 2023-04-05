@@ -75,6 +75,7 @@ public:
         }
 
         start_.setZero();
+        start_(2) = 1.0;   // Prevent the starting point from getting stuck in an obstacle
     }
 
     ~GraphBasedPathFinder(){}

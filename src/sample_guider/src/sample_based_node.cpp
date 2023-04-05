@@ -90,6 +90,7 @@ public:
         execution_timer_ = nh_.createTimer(ros::Duration(1), &SampleBasedPathFinder::executionCallback, this);
 
         start_.setZero();
+        start_(2) = 1.0;   // Prevent the starting point from getting stuck in an obstacle
 
         nh_.param("run_rrt", run_rrt_, true);
         nh_.param("run_rrt_star", run_rrt_star_, true);
@@ -103,7 +104,7 @@ public:
     {
         goal_[0] = goal_msg->pose.position.x;
         goal_[1] = goal_msg->pose.position.y;
-        goal_[2] = goal_msg->pose.position.z;
+        goal_[2] = 2.0;
         ROS_INFO_STREAM("\n-----------------------------\ngoal rcved at " << goal_.transpose());
         vis_ptr_->visualize_a_ball(start_, 0.3, "start", visualization::Color::pink);
         vis_ptr_->visualize_a_ball(goal_, 0.3, "goal", visualization::Color::steelblue);
