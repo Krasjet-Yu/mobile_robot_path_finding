@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+    <node pkg="rviz" type="rviz" name="rviz" output="screen" args="-d $(find kino_planner)/launch/traj.rviz"/>
+    <include file="$(find kino_planner)/launch/map.launch"/>
+</launch>
