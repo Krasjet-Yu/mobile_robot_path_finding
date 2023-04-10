@@ -13,7 +13,14 @@ typedef GridNode *GridNodePtr;
 enum GRAPH_RET {
 	SUCCESS,
 	INIT_ERR,
-	SEARCH_ERR
+	SEARCH_ERR,
+};
+
+enum KINO_RET {
+	REACH_HORIZON=1,
+  REACH_END=2,
+  NO_PATH=3,
+  NEAR_END=4
 };
 
 struct GridNode
@@ -29,6 +36,7 @@ struct GridNode
   enum enum_state state{UNDEFIND};
 
   Eigen::Vector3i index;
+	Eigen::Matrix<double, 6, 1> state_space;
 	Eigen::Vector3i dir;  // direction of expanding
   int round;
 

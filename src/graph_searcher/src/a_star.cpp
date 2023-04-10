@@ -29,7 +29,7 @@ inline double Astar::getHeu(GridNodePtr node1, GridNodePtr node2) {
 } 
 
 std::vector<GridNodePtr> Astar::retrievePath(GridNodePtr currentPtr) {
-  vector<GridNodePtr> path;
+  std::vector<GridNodePtr> path;
   path.push_back(currentPtr);
 
   while (currentPtr->cameFrom != NULL) {

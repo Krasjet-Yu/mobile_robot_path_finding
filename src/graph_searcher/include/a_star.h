@@ -33,12 +33,12 @@ private:
 
   GridNodePtr ***GridNodeMap_;
 
+  Heuristics *heu;
+
   std::priority_queue<GridNodePtr, std::vector<GridNodePtr>, NodeComparator> OpenSet_;
 
 public:
   typedef std::shared_ptr<Astar> Ptr;
-
-  Heuristics *heu;
 
   Astar(){};
   

@@ -27,7 +27,9 @@ namespace env
     bool mapValid() { return is_global_map_valid_; }
     double getResolution() { return resolution_; }
     Eigen::Vector3d getOrigin() { return origin_; }
-    Eigen::Vector3d getMapSize() { return map_size_; };
+    Eigen::Vector3d getMapSize() { return map_size_; }
+    bool isInMap(const Eigen::Vector3d &pos) const;
+    bool isInMap(const Eigen::Vector3i &id) const;
     
     inline bool isStateValid(const Eigen::Vector3d &pos) const
     {
@@ -35,7 +37,7 @@ namespace env
       if (!isInMap(idx))
         return false;
       return (occupancy_buffer_[idxToAddress(idx)] == false);
-    };
+    }
 
     inline int getInflateOccupancy(const Eigen::Vector3d &pos) const
     {
@@ -87,8 +89,6 @@ namespace env
     void posToIndex(const Eigen::Vector3d &pos, Eigen::Vector3i &id) const;
     void indexToPos(const Eigen::Vector3i &id, Eigen::Vector3d &pos) const;
     void indexToPos(const int &x, const int &y, const int &z, Eigen::Vector3d &pos) const;
-    bool isInMap(const Eigen::Vector3d &pos) const;
-    bool isInMap(const Eigen::Vector3i &id) const;
 
     Eigen::Vector3d origin_, map_size_, min_range_, max_range_;
     double resolution_, resolution_inv_;
@@ -116,18 +116,6 @@ namespace env
   {
     return id(0) * grid_size_y_multiply_z_ + id(1) * grid_size_(2) + id(2);
   }
-
-  inline bool OccMap::isInMap(const Eigen::Vector3d &pos) const
-  {
-    Eigen::Vector3i idx;
-    posToIndex(pos, idx);
-    return isInMap(idx);
-  }
-
-  inline bool OccMap::isInMap(const Eigen::Vector3i &id) const
-  {
-    return ((id[0] | (grid_size_[0] - 1 - id[0]) | id[1] | (grid_size_[1] - 1 - id[1]) | id[2] | (grid_size_[2] - 1 - id[2])) >= 0);
-  };
 
   inline void OccMap::posToIndex(const Eigen::Vector3d &pos, Eigen::Vector3i &id) const
   {
@@ -159,6 +147,18 @@ namespace env
     pos(0) += (x + 0.5) * resolution_;
     pos(1) += (y + 0.5) * resolution_;
     pos(2) += (z + 0.5) * resolution_;
+  }
+
+  inline bool OccMap::isInMap(const Eigen::Vector3d &pos) const
+  {
+    Eigen::Vector3i idx;
+    posToIndex(pos, idx);
+    return isInMap(idx);
+  }
+
+  inline bool OccMap::isInMap(const Eigen::Vector3i &id) const
+  {
+    return ((id[0] | (grid_size_[0] - 1 - id[0]) | id[1] | (grid_size_[1] - 1 - id[1]) | id[2] | (grid_size_[2] - 1 - id[2])) >= 0);
   }
 
 } // namespace env
