@@ -185,18 +185,7 @@ GRAPH_RET Astar::AstarSearch(const double step_size, Eigen::Vector3d start_pt, E
           double static_cost = sqrt(dx * dx + dy * dy + dz * dz);
           tentative_gScore = currentPtr->gScore + static_cost;
 
-          if (!flag_explored) {
-            neighborPtr->cameFrom = currentPtr;
-            neighborPtr->gScore = tentative_gScore;
-            neighborPtr->fScore = tentative_gScore + getHeu(currentPtr, neighborPtr);
-            neighborPtr->state = GridNode::OPENSET;
-            OpenSet_.push(neighborPtr);
-          }
-          else if(neighborPtr->gScore > tentative_gScore) {
-            neighborPtr->cameFrom = currentPtr;
-            neighborPtr->gScore = tentative_gScore;
-            neighborPtr->fScore = tentative_gScore + getHeu(currentPtr, neighborPtr);
-          }
+          // TODO: update OpenSet_ and neighborPtr
         }
       }
     }
