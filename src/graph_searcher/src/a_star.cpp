@@ -186,6 +186,13 @@ GRAPH_RET Astar::AstarSearch(const double step_size, Eigen::Vector3d start_pt, E
           tentative_gScore = currentPtr->gScore + static_cost;
 
           // TODO: update OpenSet_ and neighborPtr
+          if (不在OpenSet) {
+            邻居.gScore = 邻居.gScore + tentative_gScore;
+            OpenSet_.push_back(邻居);
+          }
+          else if (在OpenSet and 邻居.gScore > 邻居.gScore + tentative_gScore) {
+            邻居.gScore = 邻居.gScore + tentative_gScore;
+          }
         }
       }
     }
